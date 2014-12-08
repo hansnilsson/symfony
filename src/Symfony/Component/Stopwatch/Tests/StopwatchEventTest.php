@@ -149,30 +149,23 @@ class StopwatchEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $event->getStartTime(), null, self::DELTA);
     }
 
-    public function testEndTime()
-    {
-        $event = new StopwatchEvent(microtime(true) * 1000);
-        $this->assertEquals(0, $event->getEndTime());
-
-        $event = new StopwatchEvent(microtime(true) * 1000);
-        $event->start();
-        $this->assertEquals(0, $event->getEndTime());
-
-        $event = new StopwatchEvent(microtime(true) * 1000);
-        $event->start();
-        usleep(100000);
-        $event->stop();
-        $event->start();
-        usleep(100000);
-        $event->stop();
-        $this->assertEquals(200, $event->getEndTime(), null, self::DELTA);
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */
     public function testInvalidOriginThrowsAnException()
     {
         new StopwatchEvent("abc");
+    }
+
+    public function testHumanRepresentation()
+    {
+        $event = new StopwatchEvent(microtime(true) * 1000);
+        $this->assertEquals('default: 0.00 MiB - 0 ms', (string) $event);
+        $event->start();
+        $event->stop();
+        $this->assertEquals(1, preg_match('/default: [0-9\.]+ MiB - [0-9]+ ms/', (string) $event));
+
+        $event = new StopwatchEvent(microtime(true) * 1000, 'foo');
+        $this->assertEquals('foo: 0.00 MiB - 0 ms', (string) $event);
     }
 }

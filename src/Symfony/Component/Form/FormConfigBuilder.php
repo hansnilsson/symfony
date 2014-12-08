@@ -44,7 +44,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
         'PUT',
         'POST',
         'DELETE',
-        'PATCH'
+        'PATCH',
     );
 
     /**
@@ -186,7 +186,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      * @param array                    $options    The form options
      *
      * @throws InvalidArgumentException If the data class is not a valid class or if
-     *                                   the name contains invalid characters.
+     *                                  the name contains invalid characters.
      */
     public function __construct($name, $dataClass, EventDispatcherInterface $dispatcher, array $options = array())
     {
@@ -356,8 +356,8 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      */
     public function getVirtual()
     {
-        // Uncomment this as soon as the deprecation note should be shown
-        // trigger_error('getVirtual() is deprecated since version 2.3 and will be removed in 3.0. Use getInheritData() instead.', E_USER_DEPRECATED);
+        trigger_error('FormConfigBuilder::getVirtual() is deprecated since version 2.3 and will be removed in 3.0. Use FormConfigBuilder::getInheritData() instead.', E_USER_DEPRECATED);
+
         return $this->getInheritData();
     }
 
@@ -713,7 +713,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
     /**
      * Alias of {@link setInheritData()}.
      *
-     * @param bool    $inheritData Whether the form should inherit its parent's data.
+     * @param bool $inheritData Whether the form should inherit its parent's data.
      *
      * @return FormConfigBuilder The configuration object.
      *
@@ -722,8 +722,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      */
     public function setVirtual($inheritData)
     {
-        // Uncomment this as soon as the deprecation note should be shown
-        // trigger_error('setVirtual() is deprecated since version 2.3 and will be removed in 3.0. Use setInheritData() instead.', E_USER_DEPRECATED);
+        trigger_error('FormConfigBuilder::setVirtual() is deprecated since version 2.3 and will be removed in 3.0. Use FormConfigBuilder::setInheritData() instead.', E_USER_DEPRECATED);
 
         $this->setInheritData($inheritData);
     }
@@ -879,9 +878,9 @@ class FormConfigBuilder implements FormConfigBuilderInterface
     /**
      * Validates whether the given variable is a valid form name.
      *
-     * @param string|int     $name The tested form name.
+     * @param string|int $name The tested form name.
      *
-     * @throws UnexpectedTypeException   If the name is not a string or an integer.
+     * @throws UnexpectedTypeException  If the name is not a string or an integer.
      * @throws InvalidArgumentException If the name contains invalid characters.
      */
     public static function validateName($name)
@@ -910,7 +909,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      *
      * @param string $name The tested form name.
      *
-     * @return bool    Whether the name is valid.
+     * @return bool Whether the name is valid.
      */
     public static function isValidName($name)
     {

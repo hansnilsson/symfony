@@ -24,8 +24,8 @@ use Symfony\Bridge\Propel1\Form\EventListener\TranslationFormListener;
 class TranslationType extends AbstractType
 {
     /**
-      * {@inheritdoc}
-      */
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addEventSubscriber(
@@ -48,7 +48,7 @@ class TranslationType extends AbstractType
     {
         $resolver->setRequired(array(
             'data_class',
-            'columns'
+            'columns',
         ));
     }
 }

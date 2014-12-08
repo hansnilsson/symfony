@@ -22,7 +22,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  * @author Bernhard Schussek <bschussek@gmail.com>
  *
  * @deprecated Deprecated since version 2.5, to be removed in Symfony 3.0.
- *             Use {@link NodeVisitor\NodeVisitorInterface} instead.
  */
 class ValidationVisitor implements ValidationVisitorInterface, GlobalExecutionContextInterface
 {
@@ -80,6 +79,8 @@ class ValidationVisitor implements ValidationVisitorInterface, GlobalExecutionCo
      */
     public function __construct($root, MetadataFactoryInterface $metadataFactory, ConstraintValidatorFactoryInterface $validatorFactory, TranslatorInterface $translator, $translationDomain = null, array $objectInitializers = array())
     {
+        trigger_error('Symfony\Component\Validator\ValidationVisitor was deprecated in version 2.5 and will be removed in version 3.0.', E_USER_DEPRECATED);
+
         foreach ($objectInitializers as $initializer) {
             if (!$initializer instanceof ObjectInitializerInterface) {
                 throw new UnexpectedTypeException($initializer, 'Symfony\Component\Validator\ObjectInitializerInterface');
@@ -130,16 +131,19 @@ class ValidationVisitor implements ValidationVisitorInterface, GlobalExecutionCo
                 return;
             }
 
+            // Initialize if the object wasn't initialized before
+            if (!isset($this->validatedObjects[$hash])) {
+                foreach ($this->objectInitializers as $initializer) {
+                    if (!$initializer instanceof ObjectInitializerInterface) {
+                        throw new \LogicException('Validator initializers must implement ObjectInitializerInterface.');
+                    }
+                    $initializer->initialize($value);
+                }
+            }
+
             // Remember validating this object before starting and possibly
             // traversing the object graph
             $this->validatedObjects[$hash][$group] = true;
-
-            foreach ($this->objectInitializers as $initializer) {
-                if (!$initializer instanceof ObjectInitializerInterface) {
-                    throw new \LogicException('Validator initializers must implement ObjectInitializerInterface.');
-                }
-                $initializer->initialize($value);
-            }
         }
 
         // Validate arrays recursively by default, otherwise every driver needs

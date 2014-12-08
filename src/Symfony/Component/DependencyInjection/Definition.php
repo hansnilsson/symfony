@@ -25,6 +25,7 @@ class Definition
 {
     private $class;
     private $file;
+    private $factory;
     private $factoryClass;
     private $factoryMethod;
     private $factoryService;
@@ -57,6 +58,34 @@ class Definition
     }
 
     /**
+     * Sets a factory.
+     *
+     * @param string|array $factory A PHP function or an array containing a class/Reference and a method to call
+     *
+     * @return Definition The current instance
+     */
+    public function setFactory($factory)
+    {
+        if (is_string($factory) && strpos($factory, '::') !== false) {
+            $factory = explode('::', $factory, 2);
+        }
+
+        $this->factory = $factory;
+
+        return $this;
+    }
+
+    /**
+     * Gets the factory.
+     *
+     * @return string|array The PHP function or an array containing a class/Reference and a method to call
+     */
+    public function getFactory()
+    {
+        return $this->factory;
+    }
+
+    /**
      * Sets the name of the class that acts as a factory using the factory method,
      * which will be invoked statically.
      *
@@ -65,9 +94,12 @@ class Definition
      * @return Definition The current instance
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function setFactoryClass($factoryClass)
     {
+        trigger_error('Definition::setFactoryClass() is deprecated since version 2.6 and will be removed in 3.0. Use Definition::setFactory() instead.', E_USER_DEPRECATED);
+
         $this->factoryClass = $factoryClass;
 
         return $this;
@@ -79,6 +111,7 @@ class Definition
      * @return string|null The factory class name
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function getFactoryClass()
     {
@@ -93,9 +126,12 @@ class Definition
      * @return Definition The current instance
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function setFactoryMethod($factoryMethod)
     {
+        trigger_error('Definition::setFactoryMethod() is deprecated since version 2.6 and will be removed in 3.0. Use Definition::setFactory() instead.', E_USER_DEPRECATED);
+
         $this->factoryMethod = $factoryMethod;
 
         return $this;
@@ -142,6 +178,7 @@ class Definition
      * @return string|null The factory method name
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function getFactoryMethod()
     {
@@ -156,9 +193,12 @@ class Definition
      * @return Definition The current instance
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function setFactoryService($factoryService)
     {
+        trigger_error('Definition::setFactoryService() is deprecated since version 2.6 and will be removed in 3.0. Use Definition::setFactory() instead.', E_USER_DEPRECATED);
+
         $this->factoryService = $factoryService;
 
         return $this;
@@ -170,6 +210,7 @@ class Definition
      * @return string|null The factory service id
      *
      * @api
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function getFactoryService()
     {
@@ -267,8 +308,8 @@ class Definition
     /**
      * Sets a specific argument
      *
-     * @param int     $index
-     * @param mixed   $argument
+     * @param int   $index
+     * @param mixed $argument
      *
      * @return Definition The current instance
      *
@@ -302,7 +343,7 @@ class Definition
     /**
      * Gets an argument to pass to the service constructor/factory method.
      *
-     * @param int     $index
+     * @param int $index
      *
      * @return mixed The argument value
      *
@@ -575,7 +616,7 @@ class Definition
     /**
      * Sets the visibility of this service.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition The current instance
      *
@@ -603,7 +644,7 @@ class Definition
     /**
      * Sets the synchronized flag of this service.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition The current instance
      *
@@ -631,7 +672,7 @@ class Definition
     /**
      * Sets the lazy flag of this service.
      *
-     * @param bool    $lazy
+     * @param bool $lazy
      *
      * @return Definition The current instance
      */
@@ -656,7 +697,7 @@ class Definition
      * Sets whether this definition is synthetic, that is not constructed by the
      * container, but dynamically injected.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition the current instance
      *
@@ -686,7 +727,7 @@ class Definition
      * Whether this definition is abstract, that means it merely serves as a
      * template for other definitions.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition the current instance
      *

@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Validator;
 
+trigger_error('ValidatorInterface was deprecated in version 2.5 and will be removed in version 3.0. Please use Validator\\ValidatorInterface instead.', E_USER_DEPRECATED);
+
 /**
  * Validates values and graphs of objects and arrays.
  *
@@ -68,7 +70,7 @@ interface ValidatorInterface
      * The accepted values depend on the {@link MetadataFactoryInterface}
      * implementation.
      *
-     * @param string     $containingValue The value containing the property.
+     * @param mixed      $containingValue The value containing the property.
      * @param string     $property        The name of the property to validate
      * @param string     $value           The value to validate against the
      *                                    constraints of the property.

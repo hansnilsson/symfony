@@ -251,24 +251,7 @@ class Application
      */
     public function getHelp()
     {
-        $messages = array(
-            $this->getLongVersion(),
-            '',
-            '<comment>Usage:</comment>',
-            '  [options] command [arguments]',
-            '',
-            '<comment>Options:</comment>',
-        );
-
-        foreach ($this->getDefinition()->getOptions() as $option) {
-            $messages[] = sprintf('  %-29s %s %s',
-                '<info>--'.$option->getName().'</info>',
-                $option->getShortcut() ? '<info>-'.$option->getShortcut().'</info>' : '  ',
-                $option->getDescription()
-            );
-        }
-
-        return implode(PHP_EOL, $messages);
+        return $this->getLongVersion();
     }
 
     /**
@@ -725,9 +708,9 @@ class Application
                 $trace = $e->getTrace();
                 array_unshift($trace, array(
                     'function' => '',
-                    'file'     => $e->getFile() != null ? $e->getFile() : 'n/a',
-                    'line'     => $e->getLine() != null ? $e->getLine() : 'n/a',
-                    'args'     => array(),
+                    'file' => $e->getFile() != null ? $e->getFile() : 'n/a',
+                    'line' => $e->getLine() != null ? $e->getLine() : 'n/a',
+                    'args' => array(),
                 ));
 
                 for ($i = 0, $count = count($trace); $i < $count; $i++) {
@@ -817,8 +800,8 @@ class Application
      *
      * Can be useful to force terminal dimensions for functional tests.
      *
-     * @param int     $width  The width
-     * @param int     $height The height
+     * @param int $width  The width
+     * @param int $height The height
      *
      * @return Application The current application
      */
@@ -845,8 +828,8 @@ class Application
 
         if (true === $input->hasParameterOption(array('--no-interaction', '-n'))) {
             $input->setInteractive(false);
-        } elseif (function_exists('posix_isatty') && $this->getHelperSet()->has('dialog')) {
-            $inputStream = $this->getHelperSet()->get('dialog')->getInputStream();
+        } elseif (function_exists('posix_isatty') && $this->getHelperSet()->has('question')) {
+            $inputStream = $this->getHelperSet()->get('question')->getInputStream();
             if (!@posix_isatty($inputStream)) {
                 $input->setInteractive(false);
             }
@@ -876,6 +859,8 @@ class Application
      * @param OutputInterface $output  An Output instance
      *
      * @return int 0 if everything went fine, or an error code
+     *
+     * @throws \Exception when the command being run threw an exception
      */
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output)
     {
@@ -892,16 +877,20 @@ class Application
         $event = new ConsoleCommandEvent($command, $input, $output);
         $this->dispatcher->dispatch(ConsoleEvents::COMMAND, $event);
 
-        try {
-            $exitCode = $command->run($input, $output);
-        } catch (\Exception $e) {
-            $event = new ConsoleTerminateEvent($command, $input, $output, $e->getCode());
-            $this->dispatcher->dispatch(ConsoleEvents::TERMINATE, $event);
+        if ($event->commandShouldRun()) {
+            try {
+                $exitCode = $command->run($input, $output);
+            } catch (\Exception $e) {
+                $event = new ConsoleTerminateEvent($command, $input, $output, $e->getCode());
+                $this->dispatcher->dispatch(ConsoleEvents::TERMINATE, $event);
 
-            $event = new ConsoleExceptionEvent($command, $input, $output, $e, $event->getExitCode());
-            $this->dispatcher->dispatch(ConsoleEvents::EXCEPTION, $event);
+                $event = new ConsoleExceptionEvent($command, $input, $output, $e, $event->getExitCode());
+                $this->dispatcher->dispatch(ConsoleEvents::EXCEPTION, $event);
 
-            throw $event->getException();
+                throw $event->getException();
+            }
+        } else {
+            $exitCode = ConsoleCommandEvent::RETURN_CODE_DISABLED;
         }
 
         $event = new ConsoleTerminateEvent($command, $input, $output, $exitCode);
@@ -934,7 +923,7 @@ class Application
 
             new InputOption('--help',           '-h', InputOption::VALUE_NONE, 'Display this help message.'),
             new InputOption('--quiet',          '-q', InputOption::VALUE_NONE, 'Do not output any message.'),
-            new InputOption('--verbose',        '-v|vv|vvv', InputOption::VALUE_NONE, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug'),
+            new InputOption('--verbose',        '-v|vv|vvv', InputOption::VALUE_NONE, 'Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug.'),
             new InputOption('--version',        '-V', InputOption::VALUE_NONE, 'Display this application version.'),
             new InputOption('--ansi',           '',   InputOption::VALUE_NONE, 'Force ANSI output.'),
             new InputOption('--no-ansi',        '',   InputOption::VALUE_NONE, 'Disable ANSI output.'),
@@ -961,9 +950,9 @@ class Application
     {
         return new HelperSet(array(
             new FormatterHelper(),
-            new DialogHelper(),
-            new ProgressHelper(),
-            new TableHelper(),
+            new DialogHelper(false),
+            new ProgressHelper(false),
+            new TableHelper(false),
             new DebugFormatterHelper(),
             new ProcessHelper(),
             new QuestionHelper(),
@@ -1052,8 +1041,8 @@ class Application
      * Finds alternative of $name among $collection,
      * if nothing is found in $collection, try in $abbrevs
      *
-     * @param string               $name       The string
-     * @param array|\Traversable   $collection The collection
+     * @param string             $name       The string
+     * @param array|\Traversable $collection The collection
      *
      * @return array A sorted array of similar string
      */
@@ -1078,7 +1067,7 @@ class Application
                 }
 
                 $lev = levenshtein($subname, $parts[$i]);
-                if ($lev <= strlen($subname) / 3 || false !== strpos($parts[$i], $subname)) {
+                if ($lev <= strlen($subname) / 3 || '' !== $subname && false !== strpos($parts[$i], $subname)) {
                     $alternatives[$collectionName] = $exists ? $alternatives[$collectionName] + $lev : $lev;
                 } elseif ($exists) {
                     $alternatives[$collectionName] += $threshold;

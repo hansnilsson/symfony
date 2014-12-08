@@ -59,18 +59,18 @@ abstract class Kernel implements KernelInterface, TerminableInterface
     protected $startTime;
     protected $loadClassCache;
 
-    const VERSION         = '2.6.0-DEV';
-    const VERSION_ID      = '20600';
-    const MAJOR_VERSION   = '2';
-    const MINOR_VERSION   = '6';
+    const VERSION = '3.0.0-DEV';
+    const VERSION_ID = '30000';
+    const MAJOR_VERSION = '3';
+    const MINOR_VERSION = '0';
     const RELEASE_VERSION = '0';
-    const EXTRA_VERSION   = 'DEV';
+    const EXTRA_VERSION = 'DEV';
 
     /**
      * Constructor.
      *
-     * @param string  $environment The environment
-     * @param bool    $debug       Whether to enable debugging or not
+     * @param string $environment The environment
+     * @param bool   $debug       Whether to enable debugging or not
      *
      * @api
      */
@@ -84,15 +84,6 @@ abstract class Kernel implements KernelInterface, TerminableInterface
         if ($this->debug) {
             $this->startTime = microtime(true);
         }
-
-        $this->init();
-    }
-
-    /**
-     * @deprecated Deprecated since version 2.3, to be removed in 3.0. Move your logic in the constructor instead.
-     */
-    public function init()
-    {
     }
 
     public function __clone()
@@ -209,9 +200,13 @@ abstract class Kernel implements KernelInterface, TerminableInterface
      * {@inheritdoc}
      *
      * @api
+     *
+     * @deprecated Deprecated since version 2.6, to be removed in 3.0.
      */
     public function isClassInActiveBundle($class)
     {
+        trigger_error('Symfony\\Component\\HttpKernel\\Kernel::isClassInActiveBundle() is deprecated since version 2.6 and will be removed in version 3.0.', E_USER_DEPRECATED);
+
         foreach ($this->getBundles() as $bundle) {
             if (0 === strpos($class, $bundle->getNamespace())) {
                 return true;
@@ -258,9 +253,9 @@ abstract class Kernel implements KernelInterface, TerminableInterface
      *
      * before looking in the bundle resource folder.
      *
-     * @param string  $name  A resource name to locate
-     * @param string  $dir   A directory where to look for the resource first
-     * @param bool    $first Whether to return the first path or paths for all matching bundles
+     * @param string $name  A resource name to locate
+     * @param string $dir   A directory where to look for the resource first
+     * @param bool   $first Whether to return the first path or paths for all matching bundles
      *
      * @return string|array The absolute path of the resource or an array if $first is false
      *
@@ -517,7 +512,6 @@ abstract class Kernel implements KernelInterface, TerminableInterface
                 array_pop($bundleMap);
             }
         }
-
     }
 
     /**
@@ -585,14 +579,14 @@ abstract class Kernel implements KernelInterface, TerminableInterface
 
         return array_merge(
             array(
-                'kernel.root_dir'        => $this->rootDir,
-                'kernel.environment'     => $this->environment,
-                'kernel.debug'           => $this->debug,
-                'kernel.name'            => $this->name,
-                'kernel.cache_dir'       => $this->getCacheDir(),
-                'kernel.logs_dir'        => $this->getLogDir(),
-                'kernel.bundles'         => $bundles,
-                'kernel.charset'         => $this->getCharset(),
+                'kernel.root_dir' => $this->rootDir,
+                'kernel.environment' => $this->environment,
+                'kernel.debug' => $this->debug,
+                'kernel.name' => $this->name,
+                'kernel.cache_dir' => $this->getCacheDir(),
+                'kernel.logs_dir' => $this->getLogDir(),
+                'kernel.bundles' => $bundles,
+                'kernel.charset' => $this->getCharset(),
                 'kernel.container_class' => $this->getContainerClass(),
             ),
             $this->getEnvParameters()
@@ -709,7 +703,7 @@ abstract class Kernel implements KernelInterface, TerminableInterface
             $dumper->setProxyDumper(new ProxyDumper());
         }
 
-        $content = $dumper->dump(array('class' => $class, 'base_class' => $baseClass));
+        $content = $dumper->dump(array('class' => $class, 'base_class' => $baseClass, 'file' => (string) $cache));
         if (!$this->debug) {
             $content = static::stripComments($content);
         }

@@ -33,8 +33,12 @@ class TableHelper extends Helper
      */
     private $table;
 
-    public function __construct()
+    public function __construct($triggerDeprecationError = true)
     {
+        if ($triggerDeprecationError) {
+            trigger_error('"Symfony\Component\Console\Helper\TableHelper" is deprecated since version 2.5 and will be removed in 3.0. Use "Symfony\Component\Console\Helper\Table" instead.', E_USER_DEPRECATED);
+        }
+
         $this->table = new Table(new NullOutput());
     }
 
@@ -44,6 +48,8 @@ class TableHelper extends Helper
      * @param int $layout self::LAYOUT_*
      *
      * @return TableHelper
+     *
+     * @throws InvalidArgumentException when the table layout is not known
      */
     public function setLayout($layout)
     {
@@ -218,7 +224,7 @@ class TableHelper extends Helper
     /**
      * Sets cell padding type.
      *
-     * @param int     $padType STR_PAD_*
+     * @param int $padType STR_PAD_*
      *
      * @return TableHelper
      */

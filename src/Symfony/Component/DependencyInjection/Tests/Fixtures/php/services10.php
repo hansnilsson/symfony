@@ -23,11 +23,13 @@ class ProjectServiceContainer extends Container
      */
     public function __construct()
     {
-        $this->parameters = $this->getDefaultParameters();
-
         $this->services =
         $this->scopedServices =
         $this->scopeStacks = array();
+        $this->parameters = array(
+            'empty_value' => '',
+            'some_string' => '-',
+        );
 
         $this->set('service_container', $this);
 
@@ -41,12 +43,20 @@ class ProjectServiceContainer extends Container
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function compile()
+    {
+        throw new LogicException('You cannot compile a dumped frozen container.');
+    }
+
+    /**
      * Gets the 'test' service.
      *
      * This service is shared.
      * This method always returns the same instance of the service.
      *
-     * @return stdClass A stdClass instance.
+     * @return \stdClass A stdClass instance.
      */
     protected function getTestService()
     {
@@ -95,17 +105,5 @@ class ProjectServiceContainer extends Container
         }
 
         return $this->parameterBag;
-    }
-    /**
-     * Gets the default parameters.
-     *
-     * @return array An array of the default parameters
-     */
-    protected function getDefaultParameters()
-    {
-        return array(
-            'empty_value' => '',
-            'some_string' => '-',
-        );
     }
 }

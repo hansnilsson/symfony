@@ -44,13 +44,15 @@ class LegacyValidator extends RecursiveValidator implements LegacyValidatorInter
         $numArgs = func_num_args();
 
         // Use new signature if constraints are given in the second argument
-        if (self::testConstraints($groups) && ($numArgs < 2 || 3 === $numArgs && self::testGroups($traverse))) {
+        if (self::testConstraints($groups) && ($numArgs < 3 || 3 === $numArgs && self::testGroups($traverse))) {
             // Rename to avoid total confusion ;)
             $constraints = $groups;
             $groups = $traverse;
 
             return parent::validate($value, $constraints, $groups);
         }
+
+        trigger_error('ValidatorInterface::validate() was deprecated in version 2.5 and will be removed in version 3.0. Please use Validator\\ValidatorInterface::validate() instead.', E_USER_DEPRECATED);
 
         $constraint = new Valid(array('traverse' => $traverse, 'deep' => $deep));
 
@@ -59,6 +61,8 @@ class LegacyValidator extends RecursiveValidator implements LegacyValidatorInter
 
     public function validateValue($value, $constraints, $groups = null)
     {
+        trigger_error('ValidatorInterface::validateValue() was deprecated in version 2.5 and will be removed in version 3.0. Please use Validator\\ValidatorInterface::validate() instead.', E_USER_DEPRECATED);
+
         return parent::validate($value, $constraints, $groups);
     }
 

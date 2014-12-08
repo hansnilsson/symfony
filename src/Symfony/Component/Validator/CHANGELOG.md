@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+2.6.0
+-----
+
+ * [BC BREAK] `FileValidator` disallow empty files
+ * [BC BREAK] `UserPasswordValidator` source message change
+ * [BC BREAK] added internal `ExecutionContextInterface::setConstraint()`
+ * added `ConstraintViolation::getConstraint()`
+ * [BC BREAK] The `ExpressionValidator` will now evaluate the Expression even when the property value is null or an empty string
+ * deprecated `ClassMetadata::hasMemberMetadatas()`
+ * deprecated `ClassMetadata::getMemberMetadatas()`
+ * deprecated `ClassMetadata::addMemberMetadata()`
+ * [BC BREAK] added `Mapping\MetadataInterface::getConstraints()`
+ * added generic "payload" option to all constraints for attaching domain-specific data
+ * [BC BREAK] added `ConstraintViolationBuilderInterface::setCause()`
+
 2.5.0
 -----
 
@@ -59,7 +74,7 @@ CHANGELOG
  * added `Util\PropertyPath`
  * made the PropertyAccess component an optional dependency
  * deprecated `ValidatorBuilder::setPropertyAccessor()`
-
+ * deprecated `validate` and `validateValue` on `Validator\Context\ExecutionContext` use `getValidator()` together with `inContext()` instead
 
 2.4.0
 -----

@@ -96,7 +96,7 @@ EOF
             } elseif (TraceableUrlMatcher::ROUTE_MATCHES == $trace['level']) {
                 $output->writeln(sprintf('<fg=green>Route "%s" matches</>', $trace['name']));
 
-                $routerDebugcommand = $this->getApplication()->find('router:debug');
+                $routerDebugcommand = $this->getApplication()->find('debug:router');
                 $output->writeln('');
                 $routerDebugcommand->run(new ArrayInput(array('name' => $trace['name'])), $output);
 
@@ -107,7 +107,7 @@ EOF
         }
 
         if (!$matches) {
-            $output->writeln('<fg=red>None of the routes match</>');
+            $output->writeln(sprintf('<fg=red>None of the routes match the path "%s"</>', $input->getArgument('path_info')));
 
             return 1;
         }
